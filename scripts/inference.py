@@ -20,7 +20,7 @@ print(sys.path)
 from ldm.util import instantiate_from_config
 from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.models.diffusion.plms import PLMSSampler
-
+import itertools
 from torchvision.transforms import Resize
 
 
@@ -295,6 +295,12 @@ def main():
         default=10,
         help="predicted_mask_dilation",
     )
+    # parser.add_argument(
+    #     "--preprocessed_dir",
+    #     type=str,
+    #     required=True,
+    #     help="Directory containing preprocessed data for single pair"
+    # )
 
 
     opt = parser.parse_args()
@@ -348,7 +354,9 @@ def main():
     if opt.fixed_code:
         start_code = torch.randn([opt.n_samples, opt.C, opt.H // opt.f, opt.W // opt.f], device=device)
 
-
+    max_batches = 4  
+    limited_loader = itertools.islice(loader, max_batches)
+    # iterator = tqdm(limited_loader, desc='test Dataset', total=max_batches)
     iterator = tqdm(loader, desc='test Dataset', total=len(loader))
     precision_scope = autocast if opt.precision == "autocast" else nullcontext
 
