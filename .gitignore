@@ -7,3 +7,4 @@ inference_logs
 train_logs
 PerceptualSimilarity
 src
+datasets/
